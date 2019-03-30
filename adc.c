@@ -15,31 +15,18 @@ void initADC( uint8_t prescale )
 	// Ensure interrupts are enabled on the AT90
 	sei();
 
-	// Set the reference voltage to VCC
-	uint8_t admux = ADMUX;
+	// Set the reference voltage
+	uint8_t admux = 0;
 
-	admux &= ~(3 << REFS0);
-	admux |= (1 << REFS0);
+	//admux &= ~(3 << REFS0);
+	admux |= (3 << REFS0);
 	ADMUX = admux;
 
 	adcsra |= (1 << ADEN); // enable all of the ADC
-	adcsra |= (1 << ADIE); // enable ADC interrupts
+	//adcsra |= (1 << ADIE); // enable ADC interrupts
 	adcsra |= (prescale & 0x3); // set the prescaler to the first 3 bits of prescale
 
 	ADCSRA = adcsra;
-}
-
-/**
- * Put the ADC into "free running mode".
- *
- */
-void startADCAutoTrigger()
-{
-	// Set auto trigger source to free running mode
-	ADCSRB &= ~(0x07);
-
-	// Enable Auto triggering
-	ADCSRA |= (1 << ADATE);
 }
 
 /**
@@ -56,7 +43,7 @@ uint16_t adcRead( uint8_t channel )
 	uint8_t admux = ADMUX;
 
 	// Clear mux select bits
-	admux &= (~0x7);
+	admux &= (0xF8);
 	// Set the mux select to the desired channel
 	admux |= (channel);
 
